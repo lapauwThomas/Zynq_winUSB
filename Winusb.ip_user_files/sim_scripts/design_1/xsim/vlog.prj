@@ -1,0 +1,8 @@
+verilog xil_defaultlib --include "../../../../USB_CDC.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../USB_CDC.srcs/sources_1/bd/design_1/ipshared/5bb9/hdl/verilog" --include "../../../../USB_CDC.srcs/sources_1/bd/design_1/ipshared/70fd/hdl" \
+"../../../bd/design_1/ip/design_1_processing_system7_0_0/sim/design_1_processing_system7_0_0.v" \
+"../../../bd/design_1/ip/design_1_xbar_0/sim/design_1_xbar_0.v" \
+"../../../bd/design_1/ip/design_1_auto_pc_0/sim/design_1_auto_pc_0.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+nosort

@@ -1,0 +1,3 @@
+#define GUID_HEX
+123
+245.67

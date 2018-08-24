@@ -1,0 +1,129 @@
+
+
+//#include <stdio.h>
+//#include "platform.h"
+//#include "xil_printf.h"
+//
+//
+//int main()
+//{
+//    init_platform();
+//
+//    print("Hello World\n\r");
+//
+//    cleanup_platform();
+//    return 0;
+//}
+
+#define XUSB_CDC_DEBUG 1
+
+
+#include "xparameters.h"		/* XPAR parameters */
+#include "xusbps.h"			/* USB controller driver */
+#include "xscugic.h"
+#include "xusbps_cdc_ch9.h"		/* Generic Chapter 9 handling code */
+#include "xusbps_WINUSB_const.h"	/* Storage class handling code */
+#include "xil_exception.h"
+#include "xpseudo_asm.h"
+#include "xreg_cortexa9.h"
+#include "xil_cache.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "xusbps_WINUSB.h"
+#include "xusbps_WINUSB_irq.h"		/* USB interrupt processing code */
+#include "xusbps_WINUSB_buffer.h"
+#include "xgpiops.h"
+#include "USB_Serial.h"
+static int setup_interrupts(XScuGic *intc) {
+	int status;
+	XScuGic_Config *intc_config;
+
+	intc_config = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
+	if (NULL == intc_config) {
+		return XST_FAILURE;
+	}
+
+	status = XScuGic_CfgInitialize(intc, intc_config, intc_config->CpuBaseAddress);
+	if (status != XST_SUCCESS) {
+		return status;
+	}
+
+	Xil_ExceptionInit();
+
+	/* Connect the GIC interrupt handler to the exception vector in the processor */
+	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_IRQ_INT,
+								 (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+								 intc);
+
+	return XST_SUCCESS;
+}
+
+
+static XGpioPs gpio_MIO;
+
+int main(void) {
+
+
+	XGpioPs_Config *ConfigPtrPS;
+	ConfigPtrPS = XGpioPs_LookupConfig(XPAR_PS7_GPIO_0_DEVICE_ID);
+	XGpioPs_CfgInitialize(&gpio_MIO, ConfigPtrPS,ConfigPtrPS->BaseAddr);
+	XGpioPs_SetDirectionPin(&gpio_MIO, 46, 1);
+    XGpioPs_SetOutputEnablePin(&gpio_MIO,46, 1);
+    XGpioPs_WritePin(&gpio_MIO, 46, 0x0); //assert RESET
+    for(uint i = 0; i<100000; i++){ //waste some time
+    }
+    XGpioPs_WritePin(&gpio_MIO, 46, 0x1); //get PHY out of reset
+    for(uint i = 0; i<100000; i++){ //waste some more time
+    }
+
+	int status;
+
+	XScuGic intc;
+	u8 text_buffer[256];
+	u32 bytes;
+
+	const char hello[13] = "Received ";
+	const char hai[4]="\n\r";
+	xil_printf("\n\n--- USB CDC ACM Test Application ---\n\n\r");
+
+
+
+	status = setup_interrupts(&intc);
+	if (status != XST_SUCCESS) {
+		xil_printf("ERROR: Unable to initialize interrupt system: %d\n", status);
+		exit(1);
+	}
+	USB_serial_init(intc);
+
+
+
+
+	// Enable interrupts in the processor
+	Xil_ExceptionEnableMask(XIL_EXCEPTION_IRQ);
+
+	/* Initialize the USB controller */
+
+
+
+	xil_printf("setup done\n\r");
+		while(1) {
+
+				//bytes = xusb_cdc_rx_bytes_available() > 5 ? 5 : xusb_cdc_rx_bytes_available();
+				bytes = USB_serial_available();
+				if (bytes != 0) {
+					bytes = USB_serial_Read(text_buffer, bytes);
+					text_buffer[bytes] = 0;
+					xil_printf("retrieved %d bytes:", bytes);
+					xil_printf(text_buffer);
+					xil_printf("\n\r");
+
+						USB_serial_Write( (u8 *)hello, 9);
+						USB_serial_Write( (u8 *)text_buffer, bytes);
+						USB_serial_Write( (u8 *)hai, 2);
+					}
+		}
+	return 0;
+
+}
+

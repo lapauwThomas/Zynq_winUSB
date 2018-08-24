@@ -1,0 +1,81 @@
+14:24:54 **** Build of configuration Debug for project HelloWorld ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/USB_serial.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/USB_serial.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/USB_serial.d" -MT"src/USB_serial.o" -o "src/USB_serial.o" "../src/USB_serial.c"
+../src/USB_serial.c: In function 'USB_serial_Putc':
+../src/USB_serial.c:71:34: warning: pointer targets in passing argument 2 of 'xusb_cdc_send_data' differ in signedness [-Wpointer-sign]
+  return xusb_cdc_send_data(&usb, &c, 1);
+                                  ^
+In file included from ../src/USB_Serial.h:10:0,
+                 from ../src/USB_serial.c:7:
+../src/xusbps_cdc.h:45:5: note: expected 'u8 * {aka unsigned char *}' but argument is of type 'char *'
+ int xusb_cdc_send_data(XUsbPs *usb, u8 *buffer, u32 length);
+     ^~~~~~~~~~~~~~~~~~
+'Finished building: ../src/USB_serial.c'
+' '
+'Building file: ../src/helloworld.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/helloworld.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/helloworld.d" -MT"src/helloworld.o" -o "src/helloworld.o" "../src/helloworld.c"
+../src/helloworld.c: In function 'main':
+../src/helloworld.c:118:17: warning: pointer targets in passing argument 1 of 'xil_printf' differ in signedness [-Wpointer-sign]
+      xil_printf(text_buffer);
+                 ^~~~~~~~~~~
+In file included from ../../HelloWorld_bsp/ps7_cortexa9_0/include/xil_io.h:65:0,
+                 from ../../HelloWorld_bsp/ps7_cortexa9_0/include/xusbps_hw.h:66,
+                 from ../../HelloWorld_bsp/ps7_cortexa9_0/include/xusbps.h:203,
+                 from ../src/helloworld.c:22:
+../../HelloWorld_bsp/ps7_cortexa9_0/include/xil_printf.h:39:6: note: expected 'const char8 * {aka const char *}' but argument is of type 'u8 * {aka unsigned char *}'
+ void xil_printf( const char8 *ctrl1, ...);
+      ^~~~~~~~~~
+'Finished building: ../src/helloworld.c'
+' '
+'Building file: ../src/platform.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/platform.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/platform.d" -MT"src/platform.o" -o "src/platform.o" "../src/platform.c"
+'Finished building: ../src/platform.c'
+' '
+'Building file: ../src/xusbps_cdc.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_cdc.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_cdc.d" -MT"src/xusbps_cdc.o" -o "src/xusbps_cdc.o" "../src/xusbps_cdc.c"
+'Finished building: ../src/xusbps_cdc.c'
+' '
+'Building file: ../src/xusbps_cdc_buffer.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_cdc_buffer.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_cdc_buffer.d" -MT"src/xusbps_cdc_buffer.o" -o "src/xusbps_cdc_buffer.o" "../src/xusbps_cdc_buffer.c"
+'Finished building: ../src/xusbps_cdc_buffer.c'
+' '
+'Building file: ../src/xusbps_cdc_ch9.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_cdc_ch9.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_cdc_ch9.d" -MT"src/xusbps_cdc_ch9.o" -o "src/xusbps_cdc_ch9.o" "../src/xusbps_cdc_ch9.c"
+'Finished building: ../src/xusbps_cdc_ch9.c'
+' '
+'Building file: ../src/xusbps_cdc_ch9_cdc.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_cdc_ch9_cdc.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_cdc_ch9_cdc.d" -MT"src/xusbps_cdc_ch9_cdc.o" -o "src/xusbps_cdc_ch9_cdc.o" "../src/xusbps_cdc_ch9_cdc.c"
+'Finished building: ../src/xusbps_cdc_ch9_cdc.c'
+' '
+'Building file: ../src/xusbps_cdc_irq.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_cdc_irq.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HelloWorld_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_cdc_irq.d" -MT"src/xusbps_cdc_irq.o" -o "src/xusbps_cdc_irq.o" "../src/xusbps_cdc_irq.c"
+../src/xusbps_cdc_irq.c:42:13: warning: 'dump_buffer' defined but not used [-Wunused-function]
+ static void dump_buffer(u8 *buffer, u32 length) {
+             ^~~~~~~~~~~
+'Finished building: ../src/xusbps_cdc_irq.c'
+' '
+'Building target: HelloWorld.elf'
+'Invoking: ARM v7 gcc linker'
+arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -L../../HelloWorld_bsp/ps7_cortexa9_0/lib -o "HelloWorld.elf"  ./src/USB_serial.o ./src/helloworld.o ./src/platform.o ./src/xusbps_cdc.o ./src/xusbps_cdc_buffer.o ./src/xusbps_cdc_ch9.o ./src/xusbps_cdc_ch9_cdc.o ./src/xusbps_cdc_irq.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: HelloWorld.elf'
+' '
+'Invoking: ARM v7 Print Size'
+arm-none-eabi-size HelloWorld.elf  |tee "HelloWorld.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  56908	   3808	  91360	 152076	  2520c	HelloWorld.elf
+'Finished building: HelloWorld.elf.size'
+' '
+
+14:24:57 Build Finished (took 3s.619ms)
+

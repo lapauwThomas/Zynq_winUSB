@@ -1,0 +1,21 @@
+10:23:57 **** Auto Build of configuration Debug for project Winusb_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/xusbps_WINUSB_ch9.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xusbps_WINUSB_ch9.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../Winusb_1_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xusbps_WINUSB_ch9.d" -MT"src/xusbps_WINUSB_ch9.o" -o "src/xusbps_WINUSB_ch9.o" "../src/xusbps_WINUSB_ch9.c"
+../src/xusbps_WINUSB_ch9.c: In function 'xusb_WINUSB_handle_ch9_setup_packet':
+../src/xusbps_WINUSB_ch9.c:106:7: error: 'XUSBPS_CMD_OSFEATUREREQ' undeclared (first use in this function); did you mean 'XUSBPS_CMD_STDREQ'?
+  case XUSBPS_CMD_OSFEATUREREQ:
+       ^~~~~~~~~~~~~~~~~~~~~~~
+       XUSBPS_CMD_STDREQ
+../src/xusbps_WINUSB_ch9.c:106:7: note: each undeclared identifier is reported only once for each function it appears in
+../src/xusbps_WINUSB_ch9.c:107:3: warning: implicit declaration of function 'XUsbPs_OSFeatureReq'; did you mean 'XUsbPs_StdDevReq'? [-Wimplicit-function-declaration]
+   XUsbPs_OSFeatureReq(InstancePtr, SetupData);
+   ^~~~~~~~~~~~~~~~~~~
+   XUsbPs_StdDevReq
+make: *** [src/xusbps_WINUSB_ch9.o] Error 1
+
+10:23:57 Build Finished (took 410ms)
+

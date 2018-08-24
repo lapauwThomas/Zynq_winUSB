@@ -1,0 +1,147 @@
+/******************************************************************************
+*
+* Copyright (C) 2010 - 2015 Xilinx, Inc.  All rights reserved.
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal 
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* Use of the Software is limited solely to applications:
+* (a) running on a Xilinx device, or
+* (b) that interact with a Xilinx device through a bus or interconnect.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+* XILINX  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF 
+* OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
+* Except as contained in this notice, the name of the Xilinx shall not be used
+* in advertising or otherwise to promote the sale, use or other dealings in
+* this Software without prior written authorization from Xilinx.
+*
+******************************************************************************/
+/*****************************************************************************/
+/**
+* @file xusbps_intr_example.c
+*
+* This file contains an example of how to use the USB driver with the USB
+* controller in DEVICE mode.
+*
+*
+*<pre>
+* MODIFICATION HISTORY:
+*
+* Ver   Who     Date     Changes
+* ----- ------  -------- ----------------------------------------------------
+* 1.00a wgr/nm  10/09/10 First release
+* 1.01a nm      03/05/10 Included xpseudo_asm.h instead of xpseudo_asm_gcc.h
+* 1.04a nm      02/05/13 Fixed CR# 696550.
+*		         Added template code for Vendor request.
+* 1.06a kpc		11/11/13 Fixed CR#759458, cacheInvalidate size should be
+*				 ailgned to ccahe line size.
+* 2.1   kpc    04/28/14 Cleanup and removed unused functions
+*</pre>
+******************************************************************************/
+
+/***************************** Include Files *********************************/
+
+#include "xparameters.h"		/* XPAR parameters */
+#include "xusbps.h"			/* USB controller driver */
+#include "xscugic.h"
+#include "xusbps_ch9.h"		/* Generic Chapter 9 handling code */
+#include "xusbps_class_winusb.h"	/* Storage class handling code */
+#include "xil_exception.h"
+#include "xpseudo_asm.h"
+#include "xreg_cortexa9.h"
+#include "xil_cache.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "xusbps_COMMS.h"
+
+
+#ifndef RINGBUFFER_SIZE
+#define RINGBUFFER_SIZE 64*1024
+#endif
+static XScuGic IntcInstance;	/* The instance of the IRQ Controller */
+static XUsbPs UsbInstance;	/* The instance of the USB Controller */
+
+
+int main(void)
+{
+	int Status;
+	u8 text_buffer[512];
+	xil_printf("Begin \r\n");
+
+	// Ensure that the PHY is out of reset
+	volatile u32 *gpio_base;
+	volatile u32 *gpio_oen;
+	volatile u32 *gpio_dir;
+
+	/* Ensure that the USB PHY is not in reset */
+	//direct adressing see TRM chapter 4, 14 and appendix B19
+
+
+	gpio_base = (u32 *)0xE000A000;
+	gpio_oen = (u32 *)0xE000A208;
+	gpio_dir = (u32 *)0xE000A204;
+
+	*(gpio_oen) |= 0x00000080; //enable output
+	*(gpio_dir) |= 0x00000080; //set pin as output
+	*gpio_base = 0xff7f0080;   // update MIO7 with 1
+
+
+
+	//Reset USB peripheral of the PS
+	u32 *usb0_base = (u32 *) 0xE0002140 ; //usb0 + cmd offset
+	*usb0_base = 0x00080002; //reset value + reset bit to 1
+
+	while((*usb0_base & 0x2)>0){ //wait till reset is done
+
+	}
+
+	/* Run the USB Interrupt example.*/
+	Status = xusb_COMMS_init(&IntcInstance, &UsbInstance,XPAR_XUSBPS_0_DEVICE_ID, XPAR_XUSBPS_0_INTR, RINGBUFFER_SIZE);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+u32 bytes;
+	while(1) {
+
+					bytes = xusb_COMMS_rx_bytes_available();
+
+					bytes = bytes>512?512:bytes; //prevent buffer overflow for bulk transfer. Not sure if necessary check in other layers
+
+					if (bytes != 0) {
+
+						xil_printf("Bytes available: %d \r\n", bytes);
+
+						bytes = xusb_COMMS_receive_data(text_buffer, bytes);
+
+						text_buffer[bytes] = 0;
+						usleep(100);
+
+						xil_printf("Received string:\r\n");
+						xil_printf(text_buffer);
+						xil_printf("\r\n");
+
+						//Loopback data in packets of 512
+						xusb_COMMS_send_data(&UsbInstance, (u8 *)text_buffer, bytes);
+
+						}
+			}
+
+	return XST_SUCCESS;
+}
+
+

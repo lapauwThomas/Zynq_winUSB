@@ -1,0 +1,16 @@
+/*
+ * USB_serial.c
+ *
+ *  Created on: 08 Jun 2018
+ *      Author: localadmin
+ */
+#include "USB_Serial.h"
+
+void USB_serial_init(void);
+
+int USB_serial_available(void){
+	return xusb_cdc_rx_bytes_available() > 5 ? 5 : xusb_cdc_rx_bytes_available();
+}
+int USB_serial_Read(u8 *buffer, u32 length);
+
+

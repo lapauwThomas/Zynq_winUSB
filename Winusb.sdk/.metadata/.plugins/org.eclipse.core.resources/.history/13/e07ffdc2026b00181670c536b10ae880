@@ -1,0 +1,54 @@
+/*
+ * USB_serial.c
+ *
+ *  Created on: 08 Jun 2018
+ *      Author: localadmin
+ */
+#include "USB_Serial.h"
+
+#define RINGBUFFER_SIZE 64*1024
+
+XUsbPs usb;
+
+static void reset_usb(void) {
+	// Ensure that the PHY is out of reset
+	volatile u32 *gpio_base;
+	volatile u32 *gpio_oen;
+	volatile u32 *gpio_dir;
+
+	/* Ensure that the USB PHY is not in reset */
+	gpio_base = (u32 *)0xE000A000;
+	gpio_oen = (u32 *)0xE000A208;
+	gpio_dir = (u32 *)0xE000A204;
+
+	*(gpio_oen) |= 0x00000080;
+	*(gpio_dir) |= 0x00000080;
+	*gpio_base = 0xff7f0080;
+}
+
+
+void USB_serial_init(XScuGic intc){
+	int status;
+	reset_usb();
+	xil_printf("USB reset \n\r");
+
+	status = xusbps_cdc_register_interrupt(&intc, &usb, XPAR_PS7_USB_0_INTR);
+	if (status != XST_SUCCESS) {
+		xil_printf("ERROR: Unable to register USB interrupts: %d\n", status);
+		exit(1);
+	}
+
+	status = xusb_cdc_init(&usb, XPAR_PS7_USB_0_DEVICE_ID, XPAR_PS7_USB_0_INTR, 64 * 1024);
+	if (status != XST_SUCCESS) {
+		xil_printf("ERROR: Unable to set up USB controller: %d\n", status);
+		exit(1);
+	}
+
+}
+
+int USB_serial_available(void){
+	return xusb_cdc_rx_bytes_available() > 5 ? 5 : xusb_cdc_rx_bytes_available();
+}
+int USB_serial_Read(u8 *buffer, u32 length);
+
+
