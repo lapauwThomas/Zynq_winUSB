@@ -1,4 +1,4 @@
-# Zynq_winUSB
+# Zynq winUSB
 WinUSB implementation for the Xilinx ZYNQ platform (Zybo board)
 
 
